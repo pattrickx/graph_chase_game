@@ -5,6 +5,7 @@ import copy
 from caracter import caracter
 from grafo import grafo
 from vertices import vertice
+from arestas import aresta
 pygame.init()
 
 screen = pygame.display.set_mode((600, 600))
@@ -119,7 +120,7 @@ lKey=1
 'leviathan.png'
 'schoolboy.png'
 'goldbat.png'
-'silverbat.png'
+'silverticebat.png'
 'mandar.png'
 'dayita.png'
 '''
@@ -150,10 +151,16 @@ cels=gerar_cels(4,player)
 mov=0
 pix=0
 atraso=0.02
-def mostrar_vertices(ver):
-        for i in range(len(ver)):
-            x,y =ver[i].get_position()
-            pygame.draw.rect(screen, (250,0,0) , pygame.Rect(y*s_gap+s_gap/4,x*s_gap+s_gap/4, s_gap/2, s_gap/2 ))
+
+
+def mostrar_grafo(vertice,aresta):
+    for i in range(len(aresta)):
+        ix,iy =vertice[aresta[i].get_origem()].get_position()
+        fx,fy =vertice[aresta[i].get_destino()].get_position()
+        pygame.draw.line(screen, (0,0,0), (iy*s_gap+s_gap/2,ix*s_gap+s_gap/2),(fy*s_gap+s_gap/2,fx*s_gap+s_gap/2), 5)
+    for i in range(len(vertice)):
+        x,y =vertice[i].get_position()
+        pygame.draw.rect(screen, (250,0,0) , pygame.Rect(y*s_gap+s_gap/4,x*s_gap+s_gap/4, s_gap/2, s_gap/2 ))
 
 while not done:
     
@@ -208,7 +215,7 @@ while not done:
             elif mapa[i][j]==3:
                 screen.blit(assets,(j*solo[2],i*solo[3]),areia)
     
-    mostrar_vertices(grafo.get_vertices())
+    mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
 
     if Key<4:
         pix+=1
