@@ -215,7 +215,7 @@ while not done:
             elif mapa[i][j]==3:
                 screen.blit(assets,(j*solo[2],i*solo[3]),areia)
     
-    mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
+    #mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
 
     if Key<4:
         pix+=1
