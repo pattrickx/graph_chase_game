@@ -100,8 +100,8 @@ mapa=[[1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1
 grafo= grafo(mapa)
 grafo.criar()
 ini=time.time()
-X=20
-Y=0
+X=40
+Y=40
 jogador=caracter(X,Y)
 Key=4
 lKey=1
@@ -161,6 +161,8 @@ def mostrar_grafo(vertice,aresta):
     for i in range(len(vertice)):
         x,y =vertice[i].get_position()
         pygame.draw.rect(screen, (250,0,0) , pygame.Rect(y*s_gap+s_gap/4,x*s_gap+s_gap/4, s_gap/2, s_gap/2 ))
+        print(x, y)
+
 
 while not done:
     
@@ -215,7 +217,8 @@ while not done:
             elif mapa[i][j]==3:
                 screen.blit(assets,(j*solo[2],i*solo[3]),areia)
     
-    #mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
+    mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
+
 
     if Key<4:
         pix+=1
