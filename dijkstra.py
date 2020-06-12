@@ -1,5 +1,5 @@
 
-
+from vertices import vertice
 def initialize_single_source(g, inicio):
     n = len(g)
     d = [None] * n
@@ -19,7 +19,7 @@ def extract_min(Q, S):
            elif Q[v] < Q[min]:
                min = v
     return min
-def dijkstra(g, inicio, destino):
+def dijkstra(g, inicio, destino,vertices,s_gap):
     d, pai = initialize_single_source(g, inicio)
     n = len(g)
     S = [False] * n 
@@ -37,14 +37,16 @@ def dijkstra(g, inicio, destino):
         vertice_atual = destino
     while vertice_atual != inicio:
         try:
-            caminho.insert(0, vertice_atual)
+            x,y = vertices[vertice_atual].get_position()
+            caminho.insert(0,[vertice_atual,(x*s_gap,y*s_gap)] )
             vertice_atual = pai[vertice_atual]
         except KeyError:
             print('Caminho não acessível')
             break
-    caminho.insert(0, inicio)
+    x,y = vertices[inicio].get_position()
+    caminho.insert(0,[vertice_atual,(x*s_gap,y*s_gap)] )
     # if d[destino] < float("+infinity"):
     #     print('A menor distância é ' + str(d[destino]))
     #     print('E o caminho é ' + str(caminho))
 
-    return d, pai,caminho
+    return caminho

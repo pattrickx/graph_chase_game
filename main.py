@@ -61,7 +61,7 @@ grafo.criar()
 ini=time.time()
 X=0
 Y=-20
-jogador=caracter(X,Y)
+
 Key=4
 lKey=1
 # personagem
@@ -125,10 +125,12 @@ def mostrar_grafo(vertice,aresta):
         campo_induzido=font.render(str(vertice[i].Id), True, (255, 255, 255))
         screen.blit(campo_induzido,pygame.Rect(y*s_gap+s_gap/4,x*s_gap+s_gap/4, s_gap/2, s_gap/2 ))
 
-d,pai,caminho = dj.dijkstra(grafo.g,3,272)
-print(d)
-print(pai)
+caminho = dj.dijkstra(grafo.g,3,272,grafo.get_vertices(),s_gap)
+# print(d)
+# print(pai)
 print(caminho)
+jogador=caracter(X,Y,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap)
+old_premonition=time.time()
 while not done:
     
     for event in pygame.event.get(): #condições para encerrar a janela
@@ -162,10 +164,20 @@ while not done:
 
     T = time.time() - ini
     if T>=atraso: # delay de geração
-        jogador.movimento(Key,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap)
+        # jogador.movimento(Key)
+        if caminho:
+            Key,caminho=jogador.Hunter_mode(caminho)
+        else:
+            Key=4
         ini=time.time()
 
+    premonition=time.time()-old_premonition
+    if premonition>=200:
+        caminho=dj.dijkstra(grafo.g,caminho[0][0],21,grafo.get_vertices(),s_gap)
+        old_premonition=time.time()
+
     x,y=jogador.get_position()
+    # print(x,' , ',y)
     if mapa[int(((cels[0][0][3])+y)/s_gap)][int((x+(cels[0][0][2]/2))/s_gap)]==2:
         # atraso=0.0083 # velocidade maxima para 120 fms
         # atraso=0.0041 # velocidade maxima para 240 fms
@@ -182,7 +194,7 @@ while not done:
             elif mapa[i][j]==3:
                 screen.blit(assets,(j*solo[2],i*solo[3]),areia)
     
-    mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
+    # mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
 
     if Key<4:
         pix+=1
@@ -196,7 +208,7 @@ while not done:
         
     else:
         screen.blit(player,(x,y),cels[lKey][0])
-    pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int(x+(cels[0][0][2]/2))-2,int(y+(cels[0][0][3]))-2, 5, 5 ))
+    # pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int(x+(cels[0][0][2]/2))-2,int(y+(cels[0][0][3]))-2, 5, 5 ))
     
 
     
