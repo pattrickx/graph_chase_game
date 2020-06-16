@@ -53,8 +53,8 @@ mapa=[[1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1
       [1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1],
       [1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,2,2,2,2,2,2,2,2,1,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1]]
 arquivo = open('mapa.txt', 'w')
-for x in mapa:
-    arquivo.write(str(x)+'\n')
+# for x in mapa:
+#     arquivo.write(str(x)+'\n')
 arquivo.close()
 grafo= grafo(mapa)
 grafo.criar()
@@ -130,27 +130,39 @@ def show_mapa():
             elif mapa[i][j]==3:
                 screen.blit(assets,(j*solo[2],i*solo[3]),areia)
 
-caminho = dj.dijkstra(grafo.g,3,272,grafo.get_vertices(),s_gap)
+
 # print(d)
 # print(pai)
-print(caminho)
+
 mov=0
 pix=0
 atraso=0.005
-X=0
-Y=-20
+
 
 Key=4
 lKey=1
 Imgs=pygame.image.load('asets/mandar.png')
 cels=gerar_cels(4,Imgs)
+
+X=int(12*s_gap-(cels[0][0][2]/2))
+Y=int(cels[0][0][3]+8*s_gap)
+
 jogador=caracter(X,Y,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap,cels,Imgs,screen)
 
+dot_position=vertice(int(((cels[0][0][3])+Y)/s_gap),int((X+(cels[0][0][2]/2))/s_gap),len(grafo.g))
+grafo.g.append([])
+grafo.vertices.append(dot_position)
+grafo.new_vertice(dot_position.Id)
+
+X=0
+Y=-20
 Imgs=pygame.image.load('asets/devil.png')
 cels=gerar_cels(4,Imgs)
 hunter=caracter(X,Y,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap,cels,Imgs,screen)
 
 old_premonition=time.time()
+
+caminho = dj.dijkstra(grafo.g,3,dot_position.Id,grafo.get_vertices(),s_gap)
 while not done:
     
     for event in pygame.event.get(): #condições para encerrar a janela
@@ -161,13 +173,14 @@ while not done:
         
     premonition=time.time()-old_premonition
     if premonition>=200:
-        caminho=dj.dijkstra(grafo.g,caminho[0][0],21,grafo.get_vertices(),s_gap)
-        print(caminho)
+        caminho=dj.dijkstra(grafo.g,caminho[0][0],dot_position.Id,grafo.get_vertices(),s_gap)
+        # print(caminho)
         old_premonition=time.time()
 
     x,y=hunter.get_position()
     # print(x,' , ',y)
     if mapa[int(((cels[0][0][3])+y)/s_gap)][int((x+(cels[0][0][2]/2))/s_gap)]==2:
+        
         # atraso=0.0083 # velocidade maxima para 120 fms
         # atraso=0.0041 # velocidade maxima para 240 fms
         atraso=0.005 # velocidade maxima para 480 fms

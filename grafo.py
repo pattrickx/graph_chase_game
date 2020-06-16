@@ -22,7 +22,6 @@ class grafo:
         return False
 
     def criar(self):
-        self.campo
         Id = 0 
         for i in range(len(self.campo)): # criar vertices
             for j in range(len(self.campo[0])):
@@ -56,88 +55,7 @@ class grafo:
 
         self.g=[[] for x in range(len(self.vertices))]
         for i in range(len(self.vertices)):
-            X,Y = self.vertices[i].get_position()
-            if X>0:
-                peso=0
-                px=0
-                for x in range(X-1,-1,-1):
-                    
-                    if self.valido(self.campo[x][Y]):
-                        peso+=1 if self.campo[x][Y]== 2 else 2
-                        px=x
-                        if self.buscar_vertice(x,Y)!= False:
-                            break
-                    else:
-                        break
-                        
-                if peso>0:
-                    fim=self.buscar_vertice(px,Y)
-                    self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
-                    # print(i)
-                    # print(self.g[self.vertices[i].get_id()])
-                    self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
-                    self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
-
-
-            if Y>0:
-                peso=0
-                py=0
-                for y in range(Y-1,-1,-1):
-                    
-                    if self.valido(self.campo[X][y]):
-                        peso+=1 if self.campo[X][y]== 2 else 2
-                        py=y
-                        if self.buscar_vertice(X,y)!= False:
-                            break
-                    else:
-                        break
-                if peso>0:
-                    fim=self.buscar_vertice(X,py)
-                    self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
-                    # print(i)
-                    # print(self.g[self.vertices[i].get_id()])
-                    self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
-                    self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
-
-            if X<=len(self.campo)-2:
-                peso=0
-                px=0
-                for x in range(X+1,len(self.campo)):
-                    
-                    if self.valido(self.campo[x][Y]):
-                        peso+=1 if self.campo[x][Y]== 2 else 2
-                        px=x
-                        if self.buscar_vertice(x,Y)!= False:
-                            break
-                    else:
-                        break
-                if peso>0:
-                    fim=self.buscar_vertice(px,Y)
-                    self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
-                    # print(i)
-                    # print(self.g[self.vertices[i].get_id()])
-                    self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
-                    self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
-
-            if Y<=len(self.campo[0])-2:# direita
-                peso=0
-                py=0
-                for y in range(Y+1,len(self.campo[0])):
-                    
-                    if self.valido(self.campo[X][y]):
-                        peso+=1 if self.campo[X][y]==2 else 2
-                        py=y
-                        if self.buscar_vertice(X,y)!= False:
-                            break
-                    else:
-                        break
-                if peso>0:
-                    fim=self.buscar_vertice(X,py)
-                    self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
-                    # print(i)
-                    # print(self.g[self.vertices[i].get_id()])
-                    self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
-                    self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
+            self.finde_arestas(i)
         # for x in self.g:
         #     print(x)
         arquivo = open('novo-arquivo.txt', 'w')
@@ -149,7 +67,96 @@ class grafo:
     def get_arestas(self):
         return self.arestas
 
+    def finde_arestas(self,i):
+        X,Y = self.vertices[i].get_position()
+        if X>0:
+            peso=0
+            px=0
+            for x in range(X-1,-1,-1):
+                
+                if self.valido(self.campo[x][Y]):
+                    peso+=1 if self.campo[x][Y]== 2 else 2
+                    px=x
+                    if self.buscar_vertice(x,Y)!= False:
+                        break
+                else:
+                    break
+                    
+            if peso>0:
+                fim=self.buscar_vertice(px,Y)
+                self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
+                # print(i)
+                # print(self.g[self.vertices[i].get_id()])
+                self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
+                self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
+        if Y>0:
+            peso=0
+            py=0
+            for y in range(Y-1,-1,-1):
+                
+                if self.valido(self.campo[X][y]):
+                    peso+=1 if self.campo[X][y]== 2 else 2
+                    py=y
+                    if self.buscar_vertice(X,y)!= False:
+                        break
+                else:
+                    break
+            if peso>0:
+                fim=self.buscar_vertice(X,py)
+                self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
+                # print(i)
+                # print(self.g[self.vertices[i].get_id()])
+                self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
+                self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
 
+        if X<=len(self.campo)-2:
+            peso=0
+            px=0
+            for x in range(X+1,len(self.campo)):
+                
+                if self.valido(self.campo[x][Y]):
+                    peso+=1 if self.campo[x][Y]== 2 else 2
+                    px=x
+                    if self.buscar_vertice(x,Y)!= False:
+                        break
+                else:
+                    break
+            if peso>0:
+                fim=self.buscar_vertice(px,Y)
+                self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
+                # print(i)
+                # print(self.g[self.vertices[i].get_id()])
+                self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
+                self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
+
+        if Y<=len(self.campo[0])-2:# direita
+            peso=0
+            py=0
+            for y in range(Y+1,len(self.campo[0])):
+                
+                if self.valido(self.campo[X][y]):
+                    peso+=1 if self.campo[X][y]==2 else 2
+                    py=y
+                    if self.buscar_vertice(X,y)!= False:
+                        break
+                else:
+                    break
+            if peso>0:
+                fim=self.buscar_vertice(X,py)
+                self.g[self.vertices[i].get_id()].append((peso,fim.get_id()))
+                # print(i)
+                # print(self.g[self.vertices[i].get_id()])
+                self.arestas.append(aresta(self.vertices[i].get_id(),fim.get_id(),peso))
+                self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
+
+    def new_vertice(self,i):
+        self.finde_arestas(i)
+
+        Arestas=self.vertices[i].arestas
+        for a in Arestas:
+
+            self.arestas.append(aresta(self.vertices[a.destino].get_id(),i,a.peso))
+            self.vertices[a.destino].add_arestas(self.arestas[len(self.arestas)-1])
 
 
 
