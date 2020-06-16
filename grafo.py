@@ -6,7 +6,7 @@ class grafo:
         self.vertices=[]
         self.arestas=[]
         self.g=[[]]
-
+    
     def valido(self,ponto): # verifica se é um ponto jogavel
         if  ponto==2 or ponto==3:
             return True
