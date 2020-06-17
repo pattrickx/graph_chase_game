@@ -33,8 +33,7 @@ def dijkstra(g, inicio, destino,vertices,s_gap):
             if d[v] > d[u] + w:
                 d[v] = d[u] + w
                 pai[v] = u
-    print(pai)
-    print(d)
+    
     caminho=[]
     vertice_atual = destino
     v=vertices[vertice_atual]
@@ -48,7 +47,7 @@ def dijkstra(g, inicio, destino,vertices,s_gap):
             break
     x,y = vertices[inicio].get_position()
     caminho.insert(0,[vertice_atual,(x*s_gap,y*s_gap)] )
-    print(caminho)
+    
     # if d[destino] < float("+infinity"):
     #     print('A menor distância é ' + str(d[destino]))
     #     print('E o caminho é ' + str(caminho))

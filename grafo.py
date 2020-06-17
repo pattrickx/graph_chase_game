@@ -150,13 +150,22 @@ class grafo:
                 self.vertices[i].add_arestas(self.arestas[len(self.arestas)-1])
 
     def new_vertice(self,i):
+        self.g.append([])
         self.finde_arestas(i)
 
         Arestas=self.vertices[i].arestas
         for a in Arestas:
-
+            self.g[a.destino].append((a.peso,i))
             self.arestas.append(aresta(self.vertices[a.destino].get_id(),i,a.peso))
             self.vertices[a.destino].add_arestas(self.arestas[len(self.arestas)-1])
-
+    def del_vertice(self,id):
+        v=self.vertices[id]
+        del(self.vertices[id])
+        del(self.g[id])
+        for a in v.arestas:
+            del(self.g[a.destino][len(self.g[a.destino])-1])
+            # self.arestas.remove(a)
+            
+    
 
 

@@ -18,6 +18,7 @@ class caracter:
         self.pix=0
         self.old_time=time.time()
         self.time=time.time()
+        self.old_pos=()
     def event_key(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w: #Cima
@@ -75,13 +76,17 @@ class caracter:
         self.time=time.time()-self.old_time
         if self.time>=delay:
             try:
-                y,x=caminho[0][1]
-                # print(caminho[0])
+                if self.old_pos==caminho[1][1]:
+                    del(caminho[1])
+                
+                y,x=caminho[1][1]
+                # print(caminho[1])
                 if self.X != x-10 or self.Y != y-40:
                     self.Key=self.move_to(x-10,y-40)
                     return caminho
                 else:
-                    del(caminho[0])
+                    self.old_pos=caminho[1][1]
+                    del(caminho[1])
                     self.Key=self.old_key
                     return caminho
                 self.old_time=time.time()
@@ -109,5 +114,5 @@ class caracter:
                 self.Y-=1
                 self.old_key=3
                 return 3
-        self.old_key=4
+        self.Key=4
         return 4
