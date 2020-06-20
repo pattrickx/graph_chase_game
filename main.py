@@ -108,10 +108,10 @@ def gerar_cels(n,image):
 
 
 def mostrar_grafo(vertice,aresta):
-    # for i in range(len(aresta)):
-    #     ix,iy =vertice[aresta[i].get_origem()].get_position()
-    #     fx,fy =vertice[aresta[i].get_destino()].get_position()
-    #     pygame.draw.line(screen, (0,0,0), (iy*s_gap+s_gap/2,ix*s_gap+s_gap/2),(fy*s_gap+s_gap/2,fx*s_gap+s_gap/2), 1)
+    for i in range(len(aresta)):
+        ix,iy =vertice[aresta[i].get_origem()].get_position()
+        fx,fy =vertice[aresta[i].get_destino()].get_position()
+        pygame.draw.line(screen, (0,0,0), (iy*s_gap+s_gap/2,ix*s_gap+s_gap/2),(fy*s_gap+s_gap/2,fx*s_gap+s_gap/2), 2)
         
     for i in range(len(vertice)):
         x,y =vertice[i].get_position()
@@ -137,18 +137,19 @@ def show_caminho(cam):
             ix,iy=c[1]
         else:
             fx,fy=c[1]
-            pygame.draw.line(screen, (0,0,0), (iy+s_gap/2,ix+s_gap/2),(fy+s_gap/2,fx+s_gap/2), 1)
-            pygame.draw.rect(screen, (250,0,0) , pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
-            campo_induzido=font.render(str(c[0]), True, (255, 255, 255))
-            screen.blit(campo_induzido,pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
+            pygame.draw.line(screen, (250,250,0), (iy+s_gap/2,ix+s_gap/2),(fy+s_gap/2,fx+s_gap/2), 2)
+            pygame.draw.rect(screen, (0,0,250) , pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
+            # campo_induzido=font.render(str(c[0]), True, (255, 255, 255))
+            # screen.blit(campo_induzido,pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
             ix,iy=fx,fy
-    pygame.draw.rect(screen, (250,0,0) , pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
+    pygame.draw.rect(screen, (0,0,250) , pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
     campo_induzido=font.render(str(c[0]), True, (255, 255, 255))
     screen.blit(campo_induzido,pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))           
-            
 
-# print(d)
-# print(pai)
+def game_over(jogador,hunter):
+    if (abs(jogador[0]-hunter[0])<20 and abs(jogador[1]-hunter[1])<20):
+        return False
+    return True
 
 mov=0
 pix=0
@@ -161,7 +162,7 @@ X=0
 Y=-20
 Imgs=pygame.image.load('asets/devil.png')
 cels=gerar_cels(4,Imgs)
-hunter=caracter(X,Y,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap,cels,Imgs,screen)
+hunter=caracter(X,Y,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap,cels,Imgs,screen,time.time())
 h_position=vertice(int(((cels[0][0][3])+Y-2)/s_gap),int((X-2+(cels[0][0][2]/2))/s_gap),len(grafo.vertices))
 
 
@@ -185,64 +186,94 @@ j_position=vertice(int(((cels[0][0][3])+Y)/s_gap),int((X+(cels[0][0][2]/2))/s_ga
 grafo.vertices.append(j_position)
 grafo.new_vertice(j_position.Id)
 caminho = dj.dijkstra(grafo.g,h_position.Id,j_position.Id,grafo.get_vertices(),s_gap)
-
+k_g=0
+k_c=0
 while not done:
-    
     for event in pygame.event.get(): #condições para encerrar a janela
         if event.type == pygame.QUIT:
             done = True
-        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_g: #Cima
+                k_g=1-k_g
+            if event.key == pygame.K_c: #Cima
+                k_c=1-k_c
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                quit()
         jogador.event_key(event)
-        
-    premonition=time.time()-old_premonition
-    if premonition>=0.5:
-        
-        grafo.del_vertice(j_position.Id)
-        grafo.del_vertice(h_position.Id)
+    if game_over(jogador.get_position(),hunter.get_position()):
+
+            
+        premonition=time.time()-old_premonition
+        if premonition>=5 or len(caminho)<2:
+            
+            grafo.del_vertice(j_position.Id)
+            grafo.del_vertice(h_position.Id)
+
+            x,y=hunter.get_position()
+            h_position=vertice(int(((cels[0][0][3])+y)/s_gap),int((x+(cels[0][0][2]/2))/s_gap),len(grafo.vertices))
+            grafo.vertices.append(h_position)
+            grafo.new_vertice(h_position.Id)
+            
+
+            x,y=jogador.get_position()
+            j_position=vertice(int(((cels[0][0][3])+y)/s_gap),int((x+(cels[0][0][2]/2))/s_gap),len(grafo.vertices))
+            grafo.vertices.append(j_position)
+            grafo.new_vertice(j_position.Id)
+
+            caminho=dj.dijkstra(grafo.g,h_position.Id,j_position.Id,grafo.get_vertices(),s_gap)
+            
+            old_premonition=time.time()
 
         x,y=hunter.get_position()
-        h_position=vertice(int(((cels[0][0][3])+y)/s_gap),int((x+(cels[0][0][2]/2))/s_gap),len(grafo.vertices))
-        grafo.vertices.append(h_position)
-        grafo.new_vertice(h_position.Id)
+        # print(x,' , ',y)
+        if mapa[int(((cels[0][0][3])+y)/s_gap)][int((x+(cels[0][0][2]/2))/s_gap)]==2:
+            
+            # atraso=0.0083 # velocidade maxima para 120 fms
+            # atraso=0.0041 # velocidade maxima para 240 fms
+            atraso=0.0002 # velocidade maxima para 480 fms
+        else:
+            atraso=0.09
+        # screen.fill((250, 250, 250))
+
+        show_mapa()
+        try:
+            if k_g==1:
+                mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
+            if k_c==1:
+                show_caminho(caminho)
+        except:
+            print("print erro")
+        jogador.movimento(0.005,time.time())
+        caminho=hunter.Hunter_mode(caminho,atraso,time.time())
         
 
-        x,y=jogador.get_position()
-        j_position=vertice(int(((cels[0][0][3])+y)/s_gap),int((x+(cels[0][0][2]/2))/s_gap),len(grafo.vertices))
-        grafo.vertices.append(j_position)
-        grafo.new_vertice(j_position.Id)
-
-        caminho=dj.dijkstra(grafo.g,h_position.Id,j_position.Id,grafo.get_vertices(),s_gap)
-        
-        old_premonition=time.time()
-
-    x,y=hunter.get_position()
-    # print(x,' , ',y)
-    if mapa[int(((cels[0][0][3])+y)/s_gap)][int((x+(cels[0][0][2]/2))/s_gap)]==2:
-        
-        # atraso=0.0083 # velocidade maxima para 120 fms
-        # atraso=0.0041 # velocidade maxima para 240 fms
-        atraso=0.005 # velocidade maxima para 480 fms
-    if mapa[int(((cels[0][0][3])+y)/s_gap)][int((x+(cels[0][0][2]/2))/s_gap)]==3:
-        atraso=0.09
-    # screen.fill((250, 250, 250))
-
-    show_mapa()
-    # mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
-    show_caminho(caminho)
-    caminho=hunter.Hunter_mode(caminho,atraso)
-    jogador.movimento(0.002)
-
-    xj,yj=jogador.get_position()
-    if yj>y:
-        hunter.show()
-        jogador.show()
+        xj,yj=jogador.get_position()
+        if yj>y:
+            hunter.show()
+            jogador.show()
+        else:
+            jogador.show()
+            hunter.show()
     else:
-        jogador.show()
-        hunter.show()
-
-    
-
+        
+        game_over=pygame.image.load('asets/gameover.png')
+        screen.blit(game_over, (0,0))
+        pygame.mixer.init()
+        pygame.mixer.music.load("music/evil-laugh.mp3")
+        pygame.mixer.music.play()
+        while True:
+            for event in pygame.event.get(): #condições para encerrar a janela
+                if event.type == pygame.QUIT:
+                    done = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        quit()
+            pygame.display.flip()
+            clock.tick(5)
+        
     # pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int(x+(cels[0][0][2]/2))-2,int(y+(cels[0][0][3]))-2, 5, 5 ))
     # pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int(X+(cels[0][0][2]/2)),int(Y+(cels[0][0][3])), 10, 10 ))
     pygame.display.flip()
-    clock.tick(1200)
+    clock.tick(480)

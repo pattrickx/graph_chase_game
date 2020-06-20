@@ -163,9 +163,17 @@ class grafo:
         del(self.vertices[id])
         del(self.g[id])
         for a in v.arestas:
-            del(self.g[a.destino][len(self.g[a.destino])-1])
-            # self.arestas.remove(a)
+            try:
+                del(self.g[a.destino][len(self.g[a.destino])-1])
+            except:
+                print("já removido")
+            self.del_aresta(a.destino,a.origem,a.peso)
+            self.del_aresta(a.origem,a.destino,a.peso)
             
-    
+    def del_aresta(self,origem, destino, peso):
+        for i in range(len(self.arestas)-1,-1,-1):
+            if self.arestas[i].origem==origem and self.arestas[i].destino==destino and self.arestas[i].peso==peso:
+                del(self.arestas[i])
+                break
 
 

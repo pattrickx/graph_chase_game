@@ -1,7 +1,7 @@
 import pygame
-import time
+
 class caracter:
-    def __init__(self,X,Y,mapa,h,w,s_gap,cels,imgs,screen):
+    def __init__(self,X,Y,mapa,h,w,s_gap,cels,imgs,screen,Time=0):
         # super().__init__()
         self.X=X
         self.Y=Y
@@ -16,8 +16,8 @@ class caracter:
         self.Key=4
         self.mov=0
         self.pix=0
-        self.old_time=time.time()
-        self.time=time.time()
+        self.old_time=Time
+        self.time=Time
         self.old_pos=()
     def event_key(self, event):
         if event.type == pygame.KEYDOWN:
@@ -39,8 +39,8 @@ class caracter:
             self.Key=4
             self.mov=0
 
-    def movimento(self,delay):
-        self.time=time.time()-self.old_time
+    def movimento(self,delay,Time):
+        self.time=Time-self.old_time
         if self.time>=delay:
             if self.Key==3: #cima
                 if self.mapa[int((self.Y+self.h-1)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
@@ -54,7 +54,7 @@ class caracter:
             elif self.Key==2: #direita
                 if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+1)/self.s_gap)]!=1:
                     self.X+=1
-            self.old_time=time.time()
+            self.old_time=Time
     def show(self):
         if self.Key<4:
             self.pix+=1
@@ -71,10 +71,11 @@ class caracter:
     def get_position(self):
         return self.X,self.Y
 
-    def Hunter_mode(self,caminho,delay):
+    def Hunter_mode(self,caminho,delay,Time):
         
-        self.time=time.time()-self.old_time
+        self.time=Time-self.old_time
         if self.time>=delay:
+            self.old_time=Time
             try:
                 if self.old_pos==caminho[1][1]:
                     del(caminho[1])
@@ -89,10 +90,11 @@ class caracter:
                     del(caminho[1])
                     self.Key=self.old_key
                     return caminho
-                self.old_time=time.time()
             except :
                 self.Key=4
                 return caminho
+        return caminho
+        
     def move_to(self,x,y):
         if self.X<x:
             if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+1)/self.s_gap)]!=1:
