@@ -7,9 +7,10 @@ from grafo import grafo
 from vertices import vertice
 from arestas import aresta
 import dijkstra as dj
+import random
 pygame.init()
 
-screen = pygame.display.set_mode((1210, 710))
+screen = pygame.display.set_mode((1200, 700))
 clock = pygame.time.Clock()
 done = False
 font = pygame.font.SysFont("arial", 20)
@@ -85,6 +86,8 @@ s_gap=20
 areia=(400,240,s_gap,s_gap)
 solo=(0,0,s_gap,s_gap)
 estrada=(64,98,s_gap,s_gap)
+assets2=pygame.image.load('asets/JapaneseVillage.png')
+rock=(189,0,40,67)
 
 
 # player = pygame.transform.scale(player,(int(player.get_rect()[2]/2),int(player.get_rect()[3]/2)))
@@ -120,15 +123,19 @@ def mostrar_grafo(vertice,aresta):
         campo_induzido=font.render(str(vertice[i].Id), True, (255, 255, 255))
         screen.blit(campo_induzido,pygame.Rect(y*s_gap+s_gap/4,x*s_gap+s_gap/4, s_gap/2, s_gap/2 ))
 
-def show_mapa():
+def show_mapa(rocks):
     for i in range(len(mapa)):
         for j in range(len(mapa[0])):
             if mapa[i][j]==1:
-                screen.blit(assets,(j*solo[2],i*solo[3]),solo)
+                screen.blit(assets,(j*s_gap,i*s_gap),solo)
             elif mapa[i][j]==2:
-                screen.blit(assets,(j*solo[2],i*solo[3]),estrada)
+                screen.blit(assets,(j*s_gap,i*s_gap),estrada)
             elif mapa[i][j]==3:
-                screen.blit(assets,(j*solo[2],i*solo[3]),areia)
+                screen.blit(assets,(j*s_gap,i*s_gap),areia)
+    if len(rocks)>0:
+        for i in rocks:
+            screen.blit(assets2,(i[0][1]*s_gap-10,i[0][0]*s_gap-30),rock)
+            pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int((i[0][1]*s_gap)+s_gap/2)-2,int((i[0][0]*s_gap)+s_gap/2)-2, 4, 4 ))
 def show_caminho(cam):
     ix,iy=0,0
     Caminho=cam[1:]
@@ -143,19 +150,39 @@ def show_caminho(cam):
             # screen.blit(campo_induzido,pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
             ix,iy=fx,fy
     pygame.draw.rect(screen, (0,0,250) , pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))
-    campo_induzido=font.render(str(c[0]), True, (255, 255, 255))
-    screen.blit(campo_induzido,pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))           
+    # campo_induzido=font.render(str(c[0]), True, (255, 255, 255))
+    # screen.blit(campo_induzido,pygame.Rect(iy+s_gap/4,ix+s_gap/4, s_gap/2, s_gap/2 ))           
 
 def game_over(jogador,hunter):
     if (abs(jogador[0]-hunter[0])<20 and abs(jogador[1]-hunter[1])<20):
         return False
     return True
 
+def rocks(n,vertices):
+    r=[]
+    for i in range(n):
+        r.append([(vertices[random.randrange(0,len(vertices)-1)].get_position()),0])
+    return r
+def break_rocks(position,rocks):
+    for i in range(len(rocks)):
+        # print('--------')
+        print('(',rocks[i][0][1],rocks[i][0][0],')    (',int((position[0]+cels[0][0][2])/s_gap),int((position[1]+cels[0][0][3])/s_gap),')')
+        if abs(rocks[i][0][1]-int((position[0]+cels[0][0][2])/s_gap))<=2 and abs(rocks[i][0][0]-int((position[1]+cels[0][0][3])/s_gap))<=2:
+            if rocks[i][1]<20:
+                rocks[i][1]+=1
+               
+                pygame.mixer.init()
+                pygame.mixer.music.load("music/picareta.mp3")
+                pygame.mixer.music.set_volume(0.05)
+                pygame.mixer.music.play()
+            else:
+                del(rocks[i])
+            break
+
+rocks=rocks(15,grafo.vertices)
 mov=0
 pix=0
 atraso=0.005
-
-
 
 
 X=0
@@ -188,6 +215,8 @@ grafo.new_vertice(j_position.Id)
 caminho = dj.dijkstra(grafo.g,h_position.Id,j_position.Id,grafo.get_vertices(),s_gap)
 k_g=0
 k_c=0
+pygame.mixer.init()
+pause=False
 while not done:
     for event in pygame.event.get(): #condições para encerrar a janela
         if event.type == pygame.QUIT:
@@ -197,11 +226,40 @@ while not done:
                 k_g=1-k_g
             if event.key == pygame.K_c: #Cima
                 k_c=1-k_c
+            if event.key == pygame.K_b:
+                break_rocks(jogador.get_position(),rocks)
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
+            if event.key == pygame.K_p:
+                pause=True
+                while pause:
+                    for event in pygame.event.get(): #condições para encerrar a janela
+                        if event.type == pygame.QUIT:
+                            done = True
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_p:
+                                pause=False
         jogador.event_key(event)
-    if game_over(jogador.get_position(),hunter.get_position()):
+    if len(rocks)==0:
+        screen.fill((0, 0, 0))
+        you_win=pygame.image.load('asets/you_win.jpg')
+        screen.blit(you_win, (100,0))
+        pygame.mixer.init()
+        pygame.mixer.music.load("music/you_win.mp3")
+        pygame.mixer.music.play()
+        while True:
+            for event in pygame.event.get(): #condições para encerrar a janela
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        quit()
+            pygame.display.flip()
+            clock.tick(5)
+    elif game_over(jogador.get_position(),hunter.get_position()):
 
             
         premonition=time.time()-old_premonition
@@ -236,7 +294,7 @@ while not done:
             atraso=0.09
         # screen.fill((250, 250, 250))
 
-        show_mapa()
+        show_mapa(rocks)
         try:
             if k_g==1:
                 mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
@@ -244,16 +302,16 @@ while not done:
                 show_caminho(caminho)
         except:
             print("print erro")
-        jogador.movimento(0.005,time.time())
+        jogador.movimento(0.00027,time.time())
         caminho=hunter.Hunter_mode(caminho,atraso,time.time())
         
 
         xj,yj=jogador.get_position()
         if yj>y:
             hunter.show()
-            jogador.show()
+            jogador.show(1)
         else:
-            jogador.show()
+            jogador.show(1)
             hunter.show()
     else:
         
@@ -265,7 +323,8 @@ while not done:
         while True:
             for event in pygame.event.get(): #condições para encerrar a janela
                 if event.type == pygame.QUIT:
-                    done = True
+                    pygame.quit()
+                    quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         pygame.quit()

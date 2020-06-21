@@ -42,6 +42,7 @@ class caracter:
     def movimento(self,delay,Time):
         self.time=Time-self.old_time
         if self.time>=delay:
+            
             if self.Key==3: #cima
                 if self.mapa[int((self.Y+self.h-1)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
                     self.Y-=1
@@ -55,8 +56,16 @@ class caracter:
                 if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+1)/self.s_gap)]!=1:
                     self.X+=1
             self.old_time=Time
-    def show(self):
+    def show(self,n=0):
         if self.Key<4:
+            if pygame.mixer.music.get_pos()>500:
+                pygame.mixer.music.stop()
+            if n==1 and not pygame.mixer.music.get_busy():
+                pygame.mixer.init()
+                pygame.mixer.music.load("music/pasos.mp3")
+                pygame.mixer.music.set_volume(0.05)
+                pygame.mixer.music.play()
+            
             self.pix+=1
             if self.pix==int(self.imgs.get_rect()[2]/40):
                 if self.mov <= 2:
@@ -68,6 +77,7 @@ class caracter:
 
         else:
             self.screen.blit(self.imgs,(self.X,self.Y),self.cels[self.old_key][0])
+        
     def get_position(self):
         return self.X,self.Y
 
