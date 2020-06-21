@@ -166,7 +166,7 @@ def rocks(n,vertices):
 def break_rocks(position,rocks,particles):
     for i in range(len(rocks)):
         # print('--------')
-        print('(',rocks[i][0][1],rocks[i][0][0],')    (',int((position[0]+cels[0][0][2])/s_gap),int((position[1]+cels[0][0][3])/s_gap),')')
+        # print('(',rocks[i][0][1],rocks[i][0][0],')    (',int((position[0]+cels[0][0][2])/s_gap),int((position[1]+cels[0][0][3])/s_gap),')')
         if abs(rocks[i][0][1]-int((position[0]+cels[0][0][2])/s_gap))<=2 and abs(rocks[i][0][0]-int((position[1]+cels[0][0][3])/s_gap))<=2:
             if rocks[i][1]<20:
                 rocks[i][1]+=1
@@ -181,7 +181,7 @@ def break_rocks(position,rocks,particles):
                 del(rocks[i])
             break
 
-rocks=rocks(15,grafo.vertices)
+rocks=rocks(10,grafo.vertices)
 mov=0
 pix=0
 atraso=0.005
@@ -240,9 +240,23 @@ while not done:
                     for event in pygame.event.get(): #condições para encerrar a janela
                         if event.type == pygame.QUIT:
                             done = True
+                            quit()
                         if event.type == pygame.KEYDOWN:
                             if event.key == pygame.K_p:
                                 pause=False
+                            if event.key == pygame.K_g: 
+                                k_g=1-k_g
+                            if event.key == pygame.K_c: 
+                                k_c=1-k_c
+                    try:
+                        if k_g==1:
+                            mostrar_grafo(grafo.get_vertices(),grafo.get_arestas())
+                        if k_c==1:
+                            show_caminho(caminho)
+                    except:
+                        print("print erro")
+                    pygame.display.flip()
+                    clock.tick(60)
         jogador.event_key(event)
     if len(rocks)==0:
         screen.fill((0, 0, 0))
@@ -250,6 +264,7 @@ while not done:
         screen.blit(you_win, (100,0))
         pygame.mixer.init()
         pygame.mixer.music.load("music/you_win.mp3")
+        pygame.mixer.music.set_volume(1)
         pygame.mixer.music.play()
         while True:
             for event in pygame.event.get(): #condições para encerrar a janela
@@ -263,7 +278,6 @@ while not done:
             pygame.display.flip()
             clock.tick(5)
     elif game_over(jogador.get_position(),hunter.get_position()):
-
             
         premonition=time.time()-old_premonition
         if premonition>=5 or len(caminho)<2:
@@ -331,6 +345,7 @@ while not done:
         screen.blit(game_over, (0,0))
         pygame.mixer.init()
         pygame.mixer.music.load("music/evil-laugh.mp3")
+        pygame.mixer.music.set_volume(1)
         pygame.mixer.music.play()
         while True:
             for event in pygame.event.get(): #condições para encerrar a janela
@@ -347,4 +362,4 @@ while not done:
     # pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int(x+(cels[0][0][2]/2))-2,int(y+(cels[0][0][3]))-2, 5, 5 ))
     # pygame.draw.rect(screen, (250,0,0) , pygame.Rect(int(X+(cels[0][0][2]/2)),int(Y+(cels[0][0][3])), 10, 10 ))
     pygame.display.flip()
-    clock.tick(480)
+    clock.tick(60)

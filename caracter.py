@@ -44,17 +44,17 @@ class caracter:
         if self.time>=delay:
             
             if self.Key==3: #cima
-                if self.mapa[int((self.Y+self.h-1)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
-                    self.Y-=1
+                if self.mapa[int((self.Y+self.h-3)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
+                    self.Y-=3
             elif self.Key==0: #baixo
-                if self.mapa[int((self.Y+self.h+1)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
-                    self.Y+=1
+                if self.mapa[int((self.Y+self.h+3)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
+                    self.Y+=3
             elif self.Key==1: #esquerda
-                if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w-1)/self.s_gap)]!=1:
-                    self.X-=1
+                if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w-3)/self.s_gap)]!=1:
+                    self.X-=3
             elif self.Key==2: #direita
-                if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+1)/self.s_gap)]!=1:
-                    self.X+=1
+                if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+3)/self.s_gap)]!=1:
+                    self.X+=3
             self.old_time=Time
     def show(self,n=0):
         if self.Key<4:
@@ -91,8 +91,8 @@ class caracter:
                     del(caminho[1])
                 
                 y,x=caminho[1][1]
-                # print(caminho[1])
-                if self.X != x-10 or self.Y != y-40:
+                # print("(",(x-10),(y-40),")  (",self.X,self.Y,") ")
+                if abs(self.X-(x-10))>3 or abs(self.Y -(y-40))>3:
                     self.Key=self.move_to(x-10,y-40)
                     return caminho
                 else:
@@ -106,24 +106,24 @@ class caracter:
         return caminho
         
     def move_to(self,x,y):
-        if self.X<x:
-            if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+1)/self.s_gap)]!=1:
-                self.X+=1
+        if x-self.X>2:
+            if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w+3)/self.s_gap)]!=1:
+                self.X+=3
                 self.old_key=2
                 return 2
-        if self.X>x:
-            if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w-1)/self.s_gap)]!=1:
-                self.X-=1
+        if self.X-x>2:
+            if self.mapa[int((self.Y+self.h)/self.s_gap)][int((self.X+self.w-3)/self.s_gap)]!=1:
+                self.X-=3
                 self.old_key=1
                 return 1
-        if self.Y<y:
-            if self.mapa[int((self.Y+self.h+1)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
-                self.Y+=1
+        if y-self.Y>2:
+            if self.mapa[int((self.Y+self.h+3)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
+                self.Y+=3
                 self.old_key=0
                 return 0
-        if self.Y>y:
-            if self.mapa[int((self.Y+self.h-1)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
-                self.Y-=1
+        if self.Y-y>2:
+            if self.mapa[int((self.Y+self.h-3)/self.s_gap)][int((self.X+self.w)/self.s_gap)]!=1:
+                self.Y-=3
                 self.old_key=3
                 return 3
         self.Key=4
