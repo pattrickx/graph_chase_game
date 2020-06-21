@@ -163,7 +163,7 @@ def rocks(n,vertices):
     for i in range(n):
         r.append([(vertices[random.randrange(0,len(vertices)-1)].get_position()),0])
     return r
-def break_rocks(position,rocks):
+def break_rocks(position,rocks,particles):
     for i in range(len(rocks)):
         # print('--------')
         print('(',rocks[i][0][1],rocks[i][0][0],')    (',int((position[0]+cels[0][0][2])/s_gap),int((position[1]+cels[0][0][3])/s_gap),')')
@@ -175,6 +175,8 @@ def break_rocks(position,rocks):
                 pygame.mixer.music.load("music/picareta.mp3")
                 pygame.mixer.music.set_volume(0.05)
                 pygame.mixer.music.play()
+                particles.append([[rocks[i][0][1]*s_gap,rocks[i][0][0]*s_gap], [random.randint(0, 20) / 10 - 1, -2], random.randint(4, 10)])
+                
             else:
                 del(rocks[i])
             break
@@ -217,6 +219,7 @@ k_g=0
 k_c=0
 pygame.mixer.init()
 pause=False
+particles = []
 while not done:
     for event in pygame.event.get(): #condições para encerrar a janela
         if event.type == pygame.QUIT:
@@ -227,7 +230,7 @@ while not done:
             if event.key == pygame.K_c: #Cima
                 k_c=1-k_c
             if event.key == pygame.K_b:
-                break_rocks(jogador.get_position(),rocks)
+                break_rocks(jogador.get_position(),rocks,particles)
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
@@ -313,6 +316,15 @@ while not done:
         else:
             jogador.show(1)
             hunter.show()
+        
+        for particle in particles:
+            particle[0][0] += particle[1][0]
+            particle[0][1] += particle[1][1]
+            particle[2] -= 0.1
+            particle[1][1] += 0.1
+            pygame.draw.circle(screen, (255, 255, 255), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+            if particle[2] <= 0:
+                particles.remove(particle)
     else:
         
         game_over=pygame.image.load('asets/gameover.png')
