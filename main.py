@@ -189,7 +189,10 @@ atraso=0.005
 
 X=0
 Y=-20
-Imgs=pygame.image.load('asets/devil.png')
+# Imgs=pygame.image.load('asets/devil.png')
+# Imgs=pygame.image.load('asets/sadako.png')
+Imgs=pygame.image.load('asets/death_scythe.png')
+
 cels=gerar_cels(4,Imgs)
 hunter=caracter(X,Y,mapa,cels[0][0][3],cels[0][0][2]/2,s_gap,cels,Imgs,screen,time.time())
 h_position=vertice(int(((cels[0][0][3])+Y-2)/s_gap),int((X-2+(cels[0][0][2]/2))/s_gap),len(grafo.vertices))

@@ -1,38 +1,39 @@
 
 from vertices import vertice
-def initialize_single_source(g, inicio):
-    n = len(g)
-    d = [None] * n
-    pai = [None] * n
-    for v in range(n): 
-        d[v] = float("+infinity")
-        pai[v] = None
-    d[inicio] = 0
-    return d, pai
-def extract_min(Q, S):
-    n = len(Q)
+def initialize_single_source(grafo, inicio):
+   
+    distance = [None] * len(grafo)
+    pai = [None] * len(grafo)
+    for v in range(len(grafo)):          # para v ← 1 até n faça
+        distance[v] = float("+infinity") # dist[v] ← ∞
+        pai[v] = None                    # dist[r] ← 0
+    distance[inicio] = 0
+    return distance, pai
+def extract_min(vertices, S):
+
     min = None
-    for v in range(n): 
+    for v in range(len(vertices)): 
         if not S[v]:
            if min == None:
                min = v
-           elif Q[v] < Q[min]:
+           elif vertices[v] < vertices[min]:
                min = v
     return min
-def dijkstra(g, inicio, destino,vertices,s_gap):
-    d, pai = initialize_single_source(g, inicio)
-    n = len(g)
-    S = [False] * n 
+def dijkstra(grafo, inicio, destino,vertices,s_gap):
+    distance, pai = initialize_single_source(grafo, inicio)
+    
+    S = [False] * len(grafo)
                     
-    Q = d           
+    Q = distance  # Q ← Nova-Fila-com-Prioridades ( )  cria uma fila-com-prioridades vazia     
                     
-    for i in range(n):
-        u = extract_min(Q, S)
-        S[u] = True 
-        for w, v in g[u]: 
-            if d[v] > d[u] + w:
-                d[v] = d[u] + w
-                pai[v] = u
+    for i in range(len(grafo)):  #enquanto Q não está vazia faça
+        v_min = extract_min(Q, S)    #  q ← Extraia-Min (Q) remove de Q um vértice q para o qual dist[q] é mínimo
+        S[v_min] = True 
+        for peso_adj, vertice_adj in grafo[v_min]:    # para cada w em Adj[q] faça
+            if distance[vertice_adj] > distance[v_min] + peso_adj:  # se dist[w] > dist[q] + f(qw)
+                #Diminua-Chave (w, Q, dist[q] + f(qw))
+                distance[vertice_adj] = distance[v_min] + peso_adj  
+                pai[vertice_adj] = v_min
     
     caminho=[]
     vertice_atual = destino
